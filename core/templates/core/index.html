@@ -1,0 +1,36 @@
+{% load static %}
+<html>
+<head>
+    <title>{% block title%}Camouflage{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <nav>
+        <div class="logo">
+            <img src="/media/icons/logo.png">
+        </div>
+        <ul class="nav-bar">
+            <a href="{%url 'home' %}"><li>Home</li></a>
+            <a href="{%url 'encode' %}"><li>Encode</li></a>
+            <a href="{%url 'decode' %}"><li>Decode</li></a>
+
+            <li>About</li>
+        </ul>
+    </nav>
+    {% if messages %}
+    {% for msg in messages  %}
+      <div class="alert alert-{{ msg.tags }}">
+        {{ msg }}
+      </div>
+      {% endfor %}
+    {% endif %}
+        {% block content %} {% endblock%}
+
+    </div>
+</body>
+
+</html>

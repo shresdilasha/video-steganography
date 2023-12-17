@@ -1,0 +1,31 @@
+{%extends 'core/index.html' %}
+{% block content %}
+    <div class="main">
+        {{message}}
+        <h1>Encode Now.</h1>
+        <p id="encode-message">Hide your message inside any video with an ease.</p>
+        <form action="" enctype = "multipart/form-data" method="POST">
+            {{form.as_p}}
+            {% csrf_token %}
+            <center><button id="encode-button" type="submit">Encode</button> </center>
+
+        </form> 
+        
+        <!-- <form>
+
+        <div class="background">
+            <div class="encode-box">
+                <button id="video-button">Place your video here </button>
+                <input type="file" name="file">
+            </div>
+        </div>
+        <div class="encode-inputs">
+                <br>
+                Your secret key: <input type="text"><br><br>
+                Your message: <input type="text"><br><br><br>
+        </div>
+        </form>  -->
+
+    </div>
+
+{%endblock %}
