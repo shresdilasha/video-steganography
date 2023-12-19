@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from . models import Encoding
-from . forms import EncodeForm
+from . forms import DecodeForm, EncodeForm
 from PIL import Image
 from django.contrib import messages
 
@@ -255,17 +255,17 @@ def encode_vid_data(file, frame_no, msg, key):
     size = (frame_width, frame_height)
     print('fourcc' , fourcc)
     print('size' , size)
-    out = cv2.VideoWriter('stego_video2.mp4',fourcc, 25.0, size)
+    out = cv2.VideoWriter('media/encoded/steg.mp4',fourcc, 25.0, size)
     max_frame=0;
     while(cap.isOpened()):
-        # print('Max frame ', max_frame)
         ret, frame = cap.read()
         if ret == False:
             break
         max_frame+=1
     cap.release()
     print("Total number of Frame in selected Video :",max_frame)
-    print(frame_no, msg, key)
+    if (frame_no > max_frame or frame_no < max_frame):
+        print("error")
     # print("Enter the frame number where you want to embed data : ")
     n=frame_no
     frame_number = 0
@@ -279,9 +279,7 @@ def encode_vid_data(file, frame_no, msg, key):
             frame_ = change_frame_with
             frame = change_frame_with
         out.write(frame)
-    
     print("\nEncoded the data successfully in the video file.")
-    return out
 
 
 # In[22]:
@@ -322,10 +320,12 @@ def video_upload(request):
 
 
 def encode(request):
-    download = None
     video = Encoding.objects.last()
-    videofile = video.file.path
-    print("video file" , videofile)
+    videofile = None
+    if video == None:
+        print("File not found")
+    else:
+        videofile = video.file.path
     form = EncodeForm(request.POST or None, request.FILES or None)
     if form.is_valid():
         form.save()
@@ -333,14 +333,32 @@ def encode(request):
         secret_key = form.cleaned_data['secret_key']
         message = form.cleaned_data['message']
         frame_number = form.cleaned_data['frame_number']
-        a = encode_vid_data(videofile, frame_number, message, secret_key)
-        print("output", a)
+        encode_vid_data(videofile, frame_number, message, secret_key)
         messages.error(request, f'Encoded')
-    context ={'video' : video, 'form' : form, 'image' : download}
+    context ={'video' : video, 'form' : form}
     return render(request, 'core/encode.html',context)
 
 
 def decode(request):
-	return render(request, 'core/decode.html')
+    video = Encoding.objects.last()
+    videofile = None
+    if video == None:
+        print("File not found")
+    else:
+        videofile = video.file.path
+    form = DecodeForm(request.POST or None, request.FILES or None)
+    if form.is_valid():
+        form.save()
+        file = form.cleaned_data['file']
+        secret_key = form.cleaned_data['secret_key']
+        frame_number = form.cleaned_data['frame_number']
+        decode_vid_data(videofile, frame_number)
+        messages.error(request, f'Encoded')
+    context ={'video' : video, 'form' : form}
+
+    return render(request, 'core/decode.html',  context)
 # %%
  
+
+def about_us(request):
+    return render(request, 'core/about.html')
